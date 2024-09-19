@@ -1,3 +1,3 @@
 # mathjail
 
-TODO
+See [solve.py](solve.py)

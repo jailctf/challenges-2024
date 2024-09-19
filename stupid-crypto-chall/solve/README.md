@@ -1,4 +1,3 @@
 # stupid crypto chall
 
-todo put solve ideas here
-
+See [solve.py](solve.py)
