@@ -12,3 +12,4 @@ one gets the last item of a dict using `dict_obj.values().__reversed__().__next_
 
 additionally, one gets the last item of a list using `list_obj.__reversed__().__next__()`
 
+ok there was also an unintended where you could get the iter function by using `__reduce__` on some iter object and then use the `__self__` of that to get to builtins and win
