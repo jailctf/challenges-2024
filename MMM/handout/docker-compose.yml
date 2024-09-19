@@ -1,0 +1,13 @@
+version: '2.4'
+services:
+  python:
+    build: .
+    ports:
+      - 5000:5000
+    restart: always
+    command: /usr/local/bin/python3 /home/ctf/server.py
+    working_dir: /home/ctf
+    user: ctf
+    environment:
+      - KEY=${GENERATED_KEY}
+

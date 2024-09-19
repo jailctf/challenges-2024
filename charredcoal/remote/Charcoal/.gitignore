@@ -1,0 +1,9 @@
+.c9/
+__pycache__/
+.~c9*
+out*
+*.swp
+*.cl
+*.clv
+*.clg
+test.in

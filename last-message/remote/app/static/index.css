@@ -1,0 +1,41 @@
+:root {
+  --background: 210 100% 6%;
+  --foreground: 180 100% 90%;
+  --primary: 200 100% 28%;
+  --primary-foreground: 180 100% 90%;
+  --secondary: 203 23% 30%;
+  --secondary-foreground: 180 100% 90%;
+  --accent: 198 70% 50%;
+  --accent-foreground: 185 10% 13%;
+  --destructive: 0 98% 44%;
+  --destructive-foreground: 0 0% 100%;
+  --muted: 200 50% 30%;
+  --muted-foreground: 180 100% 90%;
+  --card: 210 100% 12%;
+  --card-foreground: 180 100% 90%;
+  --popover: 210 100% 15%;
+  --popover-foreground: 180 100% 90%;
+  --border: 210 50% 40%;
+  --input: 210 50% 40%;
+  --ring: 180 100% 90%;
+  --radius: 0rem;
+}
+
+
+/* Minimal Scrollbar Style */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background-color: var(--background);
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: var(--muted);
+    border-radius: var(--radius);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: var(--muted-foreground);
+}

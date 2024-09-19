@@ -1,0 +1,1 @@
+tuple.__flags__//classmethod.__flags__-bool.__flags__-dict.__flags__*type.__basicsize__//-check.__class__.__basicsize__

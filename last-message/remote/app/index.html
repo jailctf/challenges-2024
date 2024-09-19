@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>LastMessage</title>
+    <link rel="stylesheet" href="https://pyscript.net/releases/2024.7.1/core.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"
+        integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA=="
+        crossorigin="anonymous"></script>
+    <script type="module" src="https://pyscript.net/releases/2024.7.1/core.js"></script>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="./static/index.css">
+
+    <script>
+        tailwind.config = {
+            fontFamily: {
+                heading: ['var(--font-heading)', 'Graphik', 'sans-serif'],
+                body: ['var(--font-body)', 'Mono', 'monospace']
+            },
+            theme: {
+                extend: {
+                    colors: {
+                        border: 'hsl(var(--border))',
+                        input: 'hsl(var(--input))',
+                        ring: 'hsl(var(--ring))',
+                        background: 'hsl(var(--background))',
+                        foreground: 'hsl(var(--foreground))',
+                        primary: {
+                            DEFAULT: 'hsl(var(--primary))',
+                            foreground: 'hsl(var(--primary-foreground))'
+                        },
+                        secondary: {
+                            DEFAULT: 'hsl(var(--secondary))',
+                            foreground: 'hsl(var(--secondary-foreground))'
+                        },
+                        destructive: {
+                            DEFAULT: 'hsl(var(--destructive))',
+                            foreground: 'hsl(var(--destructive-foreground))'
+                        },
+                        muted: {
+                            DEFAULT: 'hsl(var(--muted))',
+                            foreground: 'hsl(var(--muted-foreground))'
+                        },
+                        accent: {
+                            DEFAULT: 'hsl(var(--accent))',
+                            foreground: 'hsl(var(--accent-foreground))'
+                        },
+                        popover: {
+                            DEFAULT: 'hsl(var(--popover))',
+                            foreground: 'hsl(var(--popover-foreground))'
+                        },
+                        card: {
+                            DEFAULT: 'hsl(var(--card))',
+                            foreground: 'hsl(var(--card-foreground))'
+                        },
+                    },
+                    borderRadius: {
+                        xl: `calc(var(--radius) + 4px)`,
+                        lg: `var(--radius)`,
+                        md: `calc(var(--radius) - 2px)`,
+                        sm: `calc(var(--radius) - 4px)`
+                    },
+                    keyframes: {
+                        "accordion-down": {
+                            from: { height: 0 },
+                            to: { height: "var(--radix-accordion-content-height)" }
+                        },
+                        "accordion-up": {
+                            from: { height: "var(--radix-accordion-content-height)" },
+                            to: { height: 0 }
+                        }
+                    },
+                    animation: {
+                        "accordion-down": "accordion-down 0.2s ease-out",
+                        "accordion-up": "accordion-up 0.2s ease-out"
+                    },
+                },
+            },
+        }
+    </script>
+</head>
+
+<body>
+    <div class="flex h-screen w-full bg-background text-foreground">
+        <div class="flex h-full w-64 flex-col border-r border-muted bg-background bg-card">
+            <div class="flex items-center border-b border-muted p-4 gap-1">
+                <input id="new-chat-username"
+                    class="flex h-10 w-full border border-input ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 flex-1 rounded-md bg-muted p-2 text-sm focus:outline-none bg-card-foreground text-card-foreground"
+                    type="text" placeholder="Enter username" />
+                <button id="open-chat">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="h-5 w-5">
+                        <path d="M5 12h14"></path>
+                        <path d="M12 5v14"></path>
+                    </svg>
+                </button>
+
+            </div>
+            <div dir="ltr" class="relative flex-1 overflow-auto"
+                style="position: relative; --radix-scroll-area-corner-width: 0px; --radix-scroll-area-corner-height: 0px;">
+                <div data-radix-scroll-area-viewport="" class="h-full w-full rounded-[inherit]"
+                    style="overflow: hidden scroll;">
+                    <div style="min-width: 100%; display: table;">
+                        <div class="space-y-4 p-4 overflow-auto" id="active-messages">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-muted p-4">
+                <div class="flex items-center gap-2">
+                    <span class="relative flex shrink-0 overflow-hidden rounded-full h-8 w-8">
+                        <img id="profile-picture" class="aspect-square h-full w-full" src="/static/default.jpg"
+                            data-profile-key="default.jpg" />
+                        <input type="file" id="file-input" class="hidden" accept="image/*">
+                    </span>
+                    <div class="flex-1" id="profile-container">
+                    </div>
+                    <button onclick="window.location.href = '/'"
+                        class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-10 w-10">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="h-5 w-5">
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                            <polyline points="16 17 21 12 16 7"></polyline>
+                            <line x1="21" x2="9" y1="12" y2="12"></line>
+                        </svg>
+                        <span class="sr-only">Logout</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="flex h-full flex-1 flex-col">
+            <div class="flex items-center border-b border-muted p-4">
+                <span class="relative flex shrink-0 overflow-hidden rounded-full h-10 w-10">
+                    <img class="aspect-square h-full w-full" src="/static/default.jpg" id="recipient-profile-picture" />
+                </span>
+                <div class="ml-4">
+                    <div class="font-medium" id="message-recipient"></div>
+                </div>
+            </div>
+            <div dir="ltr" class="relative flex-1 overflow-auto p-4"
+                style="position: relative; --radix-scroll-area-corner-width: 0px; --radix-scroll-area-corner-height: 0px;">
+                <div data-radix-scroll-area-viewport="" class="h-full w-full rounded-[inherit]"
+                    style="overflow: hidden scroll;">
+                    <div style="min-width: 100%; display: table;">
+                        <div class="space-y-4" id="message-container">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-muted p-4">
+                <form class="flex items-center gap-2">
+                    <input type="text" id="message-content"
+                        class="flex max-h-[200px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                        placeholder="Type your message..."></input>
+                    <button id="submit"
+                        class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 w-10"
+                        data-id="81"><svg data-id="82" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5">
+                            <path d="m22 2-7 20-4-9-9-4Z"></path>
+                            <path d="M22 2 11 13"></path>
+                        </svg><span class="sr-only" data-id="83">Send</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="loadingModal" class="fixed inset-0 flex items-center flex-col justify-center bg-black bg-opacity-100">
+        <div class="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-primary"></div>
+        <p class="text-white mt-4 text-center" id="loading-status">Loading PyScript runtime...</p>
+    </div>
+    </div>
+    </div>
+
+
+    <script type="py" src="./static/index.py" config="./static/pyscript.json"></script>
+</body>
+
+</html>

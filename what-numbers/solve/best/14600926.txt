@@ -1,0 +1,1 @@
+zip.__flags__//map.__basicsize__*memoryview.__flags__-list.__flags__//-str.__basicsize__

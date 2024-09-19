@@ -1,0 +1,29 @@
+version: '3'
+
+services:
+  app:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    networks:
+      - last-message-network
+
+  bot:
+    build:
+      context: ./bot
+      dockerfile: Dockerfile
+    ports:
+      - "4444:4444"
+    networks:
+      - last-message-network
+    environment:
+      FLAG: jail{the_flag_will_be_here_on_remote}
+    depends_on:
+      - app
+
+networks:
+  last-message-network:
+    driver: bridge
+

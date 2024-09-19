@@ -1,0 +1,19 @@
+# In the parent directory:
+# docker build docker/Dockerfile.local -t void .
+# docker run --init -it --rm -v SCRIPT_PATH:/tmp/file.py void
+FROM python@sha256:bd55f8eed20434cc1dfc75039f766f5890995dc6adfd509cefad95835a306575 AS builder
+
+WORKDIR /build
+COPY embedder.c .
+COPY Makefile .
+RUN make DEBUGLVL=0
+
+FROM python@sha256:bd55f8eed20434cc1dfc75039f766f5890995dc6adfd509cefad95835a306575
+
+COPY flag /flag
+
+WORKDIR /app
+COPY --from=builder /build/embedder .
+COPY docker/local_entry.py .
+
+ENTRYPOINT ["/app/local_entry.py"]

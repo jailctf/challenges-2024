@@ -1,0 +1,1 @@
+map.__basicsize__-bool.__flags__^-str.__flags__-tuple.__flags__*tuple.__flags__//bytes.__flags__

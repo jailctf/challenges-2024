@@ -1,0 +1,8 @@
+**/__pycache__
+**/venv
+**/env
+**/.venv
+**/.env
+
+**/images/*
+**/!images/default.png

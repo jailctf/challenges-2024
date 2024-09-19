@@ -1,0 +1,1 @@
+str.__flags__//bytearray.__basicsize__-bytes.__flags__//bytearray.__basicsize__
